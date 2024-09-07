@@ -42,6 +42,20 @@ app.post('/update-leaderboard', async (req, res) => {
     res.sendStatus(200);
 });
 
+app.post('/award-points', async (req, res) => {
+    const { team, points } = req.body;
+    const data = await readData();
+    const index = data.leaderboard.findIndex(entry => entry.team === team);
+    if (index !== -1) {
+        data.leaderboard[index].points = Number(data.leaderboard[index].points) + Number(points);
+    } else {
+        data.leaderboard.push({ team, points: Number(points) });
+    }
+    data.leaderboard.sort((a, b) => b.points - a.points);
+    await writeData(data);
+    res.sendStatus(200);
+});
+
 app.post('/post-notice', async (req, res) => {
     const { notice } = req.body;
     const data = await readData();
