@@ -1,0 +1,106 @@
+{
+  "leaderboard": [
+    {
+      "team": "Krishna",
+      "points": 20
+    },
+    {
+      "team": "Bhishma",
+      "points": 18
+    },
+    {
+      "team": "Karna",
+      "points": 16
+    },
+    {
+      "team": "Draupadi",
+      "points": 14
+    },
+    {
+      "team": "Arjuna",
+      "points": "12"
+    },
+    {
+      "team": "Yudhishthira",
+      "points": 12
+    },
+    {
+      "team": "Bhima",
+      "points": 10
+    },
+    {
+      "team": "Duryodhana",
+      "points": 8
+    }
+  ],
+  "sports": [
+    "Athletics",
+    "Cricket",
+    "Football",
+    "Basketball",
+    "Volleyball",
+    "Badminton",
+    "Table Tennis",
+    "Chess",
+    "Swimming",
+    "Kabaddi",
+    "Wrestling",
+    "Archery",
+    "Kho Kho"
+  ],
+  "fixtures": {
+    "Athletics": [
+      {
+        "date": "2023-05-01",
+        "event": "100m Sprint",
+        "participants": "All Teams"
+      },
+      {
+        "date": "2023-05-02",
+        "event": "Long Jump",
+        "participants": "All Teams"
+      }
+    ],
+    "Cricket": [
+      {
+        "date": "2023-05-03",
+        "team1": "Arjuna",
+        "team2": "Krishna"
+      },
+      {
+        "date": "2023-05-04",
+        "team1": "Bhishma",
+        "team2": "Karna"
+      }
+    ],
+    "Football": [
+      {
+        "date": "2023-05-05",
+        "team1": "Draupadi",
+        "team2": "Yudhishthira"
+      },
+      {
+        "date": "2023-05-06",
+        "team1": "Bhima",
+        "team2": "Duryodhana"
+      }
+    ],
+    "Basketball": [
+      {
+        "date": "2023-05-07",
+        "team1": "Arjuna",
+        "team2": "Bhishma"
+      },
+      {
+        "date": "2023-05-08",
+        "team1": "Krishna",
+        "team2": "Karna"
+      }
+    ]
+  },
+  "notices": [
+    "Welcome to the Mahabharata-themed College Sports Championship!",
+    "13 sports events to compete in. May the best team win!",
+    "Check sport-specific fixtures for detailed schedules."
+  ]
+}

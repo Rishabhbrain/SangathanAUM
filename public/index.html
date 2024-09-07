@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sangathan Sports Championship</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #1a237e;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-transform: uppercase;
+        }
+        h2 {
+            color: #1a237e;
+            border-bottom: 2px solid #1a237e;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3f51b5;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+        #sport-selector {
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #3f51b5;
+            border-radius: 5px;
+        }
+        #notices {
+            background-color: #e8eaf6;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        #notices p {
+            margin: 0 0 10px 0;
+            padding: 10px;
+            background-color: white;
+            border-left: 4px solid #3f51b5;
+        }
+        button {
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #1a237e;
+        }
+        #login-form, #admin-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .error-message {
+            color: #f44336;
+            margin-top: 10px;
+        }
+        .sports-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <header class="animate__animated animate__fadeIn">
+        <h1>Sangathan Sports Championship</h1>
+    </header>
+
+    <div class="container">
+        <section id="leaderboard" class="fade-in">
+            <h2><span class="sports-icon">🏆</span>Leaderboard</h2>
+            <table id="leaderboard-table">
+                <tr>
+                    <th>Team</th>
+                    <th>Points</th>
+                </tr>
+            </table>
+        </section>
+
+        <section id="fixtures" class="fade-in">
+            <h2><span class="sports-icon">🗓️</span>Fixtures</h2>
+            <select id="sport-selector" onchange="updateFixturesTable()">
+                <option value="">All Sports</option>
+            </select>
+            <table id="fixtures-table">
+                <tr>
+                    <th>Date</th>
+                    <th>Sport</th>
+                    <th>Event/Teams</th>
+                </tr>
+            </table>
+        </section>
+
+        <section id="notices" class="fade-in">
+            <h2><span class="sports-icon">📢</span>Live Notices</h2>
+            <div id="notices-content"></div>
+        </section>
+
+        <button onclick="toggleLoginForm()" class="animate__animated animate__pulse">Admin Login</button>
+
+        <div id="login-form" style="display: none;">
+            <h3>Admin Login</h3>
+            <input type="text" id="admin-id" placeholder="Admin ID">
+            <input type="password" id="admin-password" placeholder="Password">
+            <button onclick="adminLogin()">Login</button>
+            <p id="login-error" class="error-message"></p>
+        </div>
+
+        <div id="admin-panel" style="display: none;">
+            <h3>Admin Panel</h3>
+            <h4>Update Leaderboard</h4>
+            <input type="text" id="team-name" placeholder="Team Name">
+            <input type="number" id="team-points" placeholder="Points">
+            <button onclick="updateLeaderboard()">Update</button>
+
+            <h4>Post Notice</h4>
+            <textarea id="notice-text" rows="4" cols="50"></textarea>
+            <button onclick="postNotice()">Post</button>
+            <button onclick="adminLogout()">Logout</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        let isAdminLoggedIn = false;
+        let fixtures = {};
+
+        function toggleLoginForm() {
+            const loginForm = document.getElementById('login-form');
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function adminLogin() {
+            const id = document.getElementById('admin-id').value;
+            const password = document.getElementById('admin-password').value;
+            const errorMessage = document.getElementById('login-error');
+
+            if (id === 'Rishabh' && password === 'Modi') {
+                isAdminLoggedIn = true;
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                errorMessage.textContent = '';
+            } else {
+                errorMessage.textContent = 'Invalid credentials. Please try again.';
+            }
+        }
+
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('admin-id').value = '';
+            document.getElementById('admin-password').value = '';
+        }
+
+        function updateLeaderboard() {
+            if (!isAdminLoggedIn) return;
+            const teamName = document.getElementById('team-name').value;
+            const teamPoints = document.getElementById('team-points').value;
+            fetch('/update-leaderboard', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ team: teamName, points: teamPoints })
+            }).then(() => fetchData());
+        }
+
+        function postNotice() {
+            if (!isAdminLoggedIn) return;
+            const noticeText = document.getElementById('notice-text').value;
+            fetch('/post-notice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notice: noticeText })
+            }).then(() => fetchData());
+        }
+
+        function updateLeaderboardTable(leaderboard) {
+            const table = document.getElementById('leaderboard-table');
+            table.innerHTML = '<tr><th>Team</th><th>Points</th></tr>';
+            leaderboard.forEach(entry => {
+                table.innerHTML += `<tr><td>${entry.team}</td><td>${entry.points}</td></tr>`;
+            });
+        }
+
+        function updateFixturesTable() {
+            const sport = document.getElementById('sport-selector').value;
+            const table = document.getElementById('fixtures-table');
+            table.innerHTML = '<tr><th>Date</th><th>Sport</th><th>Event/Teams</th></tr>';
+            
+            if (sport === "") {
+                Object.entries(fixtures).forEach(([sportName, sportFixtures]) => {
+                    sportFixtures.forEach(fixture => {
+                        const row = table.insertRow(-1);
+                        row.insertCell(0).textContent = fixture.date;
+                        row.insertCell(1).textContent = sportName;
+                        row.insertCell(2).textContent = fixture.event || `${fixture.team1} vs ${fixture.team2}`;
+                    });
+                });
+            } else {
+                fixtures[sport].forEach(fixture => {
+                    const row = table.insertRow(-1);
+                    row.insertCell(0).textContent = fixture.date;
+                    row.insertCell(1).textContent = sport;
+                    row.insertCell(2).textContent = fixture.event || `${fixture.team1} vs ${fixture.team2}`;
+                });
+            }
+        }
+
+        function populateSportSelector(sports) {
+            const selector = document.getElementById('sport-selector');
+            sports.forEach(sport => {
+                const option = document.createElement('option');
+                option.value = sport;
+                option.textContent = sport;
+                selector.appendChild(option);
+            });
+        }
+
+        function updateNotices(notices) {
+            const noticesDiv = document.getElementById('notices-content');
+            noticesDiv.innerHTML = notices.map(notice => `<p>${notice}</p>`).join('');
+        }
+
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    updateLeaderboardTable(data.leaderboard);
+                    fixtures = data.fixtures;
+                    updateFixturesTable();
+                    updateNotices(data.notices);
+                    populateSportSelector(data.sports);
+                });
+        }
+
+        fetchData();
+
+        // Scroll effect
+        function handleScroll() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                if (rect.top <= windowHeight * 0.75) {
+                    el.classList.add('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Initial check on page load
+    </script>
+</body>
+</html>

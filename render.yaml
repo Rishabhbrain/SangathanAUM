@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: backend
+    env: node
+    runtime:
+      version: '14'
+    startCommand: node app.js
+  - type: web
+    name: frontend
+    env: static
+    runtime:
+      version: '1'
+    startCommand: npm run start
