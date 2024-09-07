@@ -120,12 +120,38 @@
             opacity: 1;
             transform: translateY(0);
         }
+        .award-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .award-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .award-button:hover {
+            opacity: 0.9;
+        }
+        .third-place {
+            background-color: #CD7F32;
+        }
+        .second-place {
+            background-color: #C0C0C0;
+        }
+        .first-place {
+            background-color: #FFD700;
+        }
     </style>
 </head>
 <body>
     <header class="animate__animated animate__fadeIn">
         <h1>Sangathan Sports Championship</h1>
-        <h4>Annual Sports Championship of Amity University Mumbai</h4>
+        <h5>Annual Sports championship of Amity University Mumbai</h5>
     </header>
 
     <div class="container">
@@ -175,6 +201,14 @@
             <input type="number" id="team-points" placeholder="Points">
             <button onclick="updateLeaderboard()">Update</button>
 
+            <h4>Award Points</h4>
+            <input type="text" id="award-team-name" placeholder="Team Name">
+            <div class="award-buttons">
+                <button onclick="awardPoints(3)" class="award-button third-place">3rd Place (3 pts)</button>
+                <button onclick="awardPoints(5)" class="award-button second-place">2nd Place (5 pts)</button>
+                <button onclick="awardPoints(10)" class="award-button first-place">1st Place (10 pts)</button>
+            </div>
+
             <h4>Post Notice</h4>
             <textarea id="notice-text" rows="4" cols="50"></textarea>
             <button onclick="postNotice()">Post</button>
@@ -223,6 +257,23 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ team: teamName, points: teamPoints })
             }).then(() => fetchData());
+        }
+
+        function awardPoints(points) {
+            if (!isAdminLoggedIn) return;
+            const teamName = document.getElementById('award-team-name').value;
+            if (!teamName) {
+                alert('Please enter a team name');
+                return;
+            }
+            fetch('/award-points', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ team: teamName, points: points })
+            }).then(() => {
+                fetchData();
+                document.getElementById('award-team-name').value = '';
+            });
         }
 
         function postNotice() {
