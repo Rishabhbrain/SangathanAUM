@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static('public'));
@@ -15,7 +15,7 @@ async function readData() {
         const data = await fs.readFile(dataFile, 'utf8');
         return JSON.parse(data);
     } catch (error) {
-        return { leaderboard: [], fixtures: [], notices: [] };
+        return { leaderboard: [], sports: [], notices: [], results: {} };
     }
 }
 
@@ -65,10 +65,27 @@ app.post('/post-notice', async (req, res) => {
     res.sendStatus(200);
 });
 
+app.post('/declare-winners', async (req, res) => {
+    const { sport, firstPlace, secondPlace, thirdPlace } = req.body;
+    const data = await readData();
+    data.results[sport] = { firstPlace, secondPlace, thirdPlace };
+    await writeData(data);
+    res.sendStatus(200);
+});
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.post('/admin-login', (req, res) => {
+    const { id, password } = req.body;
+    if (id === process.env.ADMIN_ID && password === process.env.ADMIN_PASSWORD) {
+        res.json({ success: true });
+    } else {
+        res.json({ success: false });
+    }
+});
+
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running on port ${port}`);
 });
